@@ -85,7 +85,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'CS50W_commerce',
         'USER': 'khoaxuantu',
-        'PASSWORD': 'CS50Wecommerce',
+        'PASSWORD': 'CS50Wcommerce',
         'HOST': '127.0.0.1',
         'PORT': '5432'
     }
