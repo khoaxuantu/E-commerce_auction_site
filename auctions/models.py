@@ -8,7 +8,7 @@ def user_directory_path(instance, filename):
 
 
 class Categories(models.Model):
-    name = models.CharField(max_length=32)
+    name = models.CharField(max_length=64)
 
 
 class Product(models.Model):
@@ -56,8 +56,8 @@ class AuctionList(models.Model):
     An extra field on the many-to-many relationship between User and Product,
     representing the auction listing.
     """
-    user = models.ForeignKey(User)
-    product = models.ForeignKey(Product)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return f"{self.user}: {self.product}"
@@ -68,8 +68,8 @@ class Watchlist(models.Model):
     An extra field on the many-to-many relationship between User and Product,
     representing the watchlist.
     """
-    user = models.ForeignKey(User)
-    product = models.ForeignKey(Product)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return f"{self.user}: {self.product}"
@@ -80,8 +80,8 @@ class Comments(models.Model):
     An extra field on the many-to-many relationship between User and Product,
     representing the comments.
     """
-    user = models.ForeignKey(User)
-    product = models.ForeignKey(Product)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     comment = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)
 
