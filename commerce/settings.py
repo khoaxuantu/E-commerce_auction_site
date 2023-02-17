@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # # Add your new application
+    # 'users.apps.UsersConfig', #This object was created for us in /users/apps.py
 ]
 
 MIDDLEWARE = [
@@ -83,7 +85,7 @@ WSGI_APPLICATION = 'commerce.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'CS50W_commerce',
+        'NAME': 'cs50w_commerce',
         'USER': 'khoaxuantu',
         'PASSWORD': 'CS50Wcommerce',
         'HOST': '127.0.0.1',
@@ -130,3 +132,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+DEFAULT_AUTO_FIELD='django.db.models.BigAutoField'
