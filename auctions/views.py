@@ -1,10 +1,13 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .models import User, Product
+from .forms import *
+import datetime
 
 
 def index(request):
@@ -63,8 +66,29 @@ def register(request):
         return render(request, "auctions/register.html")
 
 
+@login_required
 def create_listing(request):
-    pass
+    if request.method == "POST":
+        prod = Product(bids=0, 
+                       seller=User.objects.get().username,
+                       date_created=datetime.date.today())
+        form = CreateListingForm(request.POST, request.FILES, instance=prod)
+        print(prod)
+        price = form["price_base"].value()
+        if form.is_valid():
+            new_prod = form.save(commit=False)
+            new_prod.price_cur = price
+            new_prod.save()
+            form.save_m2m()
+        else:
+            print(form.errors)
+            return render(request, "auctions/create_listing.html", {
+                "form": form
+            })
+
+    return render(request, "auctions/create_listing.html", {
+        "form": CreateListingForm()
+    })
 
 
 def listing_page(request):
