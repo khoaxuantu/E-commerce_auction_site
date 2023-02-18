@@ -21,7 +21,7 @@ class Product(models.Model):
     price_cur = models.PositiveIntegerField()
     bids = models.PositiveIntegerField()
     seller = models.CharField(max_length=150)
-    image_path = models.ImageField(upload_to=user_directory_path)
+    image_path = models.ImageField(upload_to=user_directory_path, blank=True)
     description = models.TextField(blank=True)
 
     category = models.ForeignKey(Categories, on_delete=models.SET_NULL, null=True)
