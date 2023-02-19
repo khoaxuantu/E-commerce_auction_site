@@ -4,7 +4,7 @@ from django.db import models
 
 def user_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/images/user_<id>/<filename>
-    return 'images/user_{0}/{1}'.format(instance.user.id, filename)
+    return 'images/user_{0}/{1}'.format(instance.seller, filename)
 
 
 class Categories(models.Model):
@@ -27,10 +27,10 @@ class Product(models.Model):
     category = models.ForeignKey(Categories, on_delete=models.SET_NULL, null=True)
 
     def __str__(self) -> str:
-        return f"Product name: {self.prod_name} \n\
-                 Price: {self.price_base} \n\
-                 Seller: {self.seller} \n\
-                 Date created: {self.date_created}\n"
+        return f"Product name: {self.prod_name}\
+                 \nPrice: {self.price_base}\
+                 \nSeller: {self.seller}\
+                 \nDate created: {self.date_created}\n"
     
 
 class User(AbstractUser):
@@ -46,9 +46,9 @@ class User(AbstractUser):
     comments = models.ManyToManyField(Product, through='Comments', related_name="prod_cmt")
 
     def __str__(self) -> str:
-        return f"Username: {self.username} \n\
-                 Fullname: {self.get_full_name()} \n\
-                 Email: {self.email}"
+        return f"Username: {self.username}\
+                 \nFullname: {self.get_full_name()}\
+                 \nEmail: {self.email}"
 
 
 class AuctionList(models.Model):
@@ -86,6 +86,6 @@ class Comments(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
-        return f"User ID: {self.user} \n\
-                 Product ID: {self.product} \n\
-                 Comment: {self.comment}"
+        return f"User ID: {self.user}\
+                 \nProduct ID: {self.product}\
+                 \nComment: {self.comment}"
