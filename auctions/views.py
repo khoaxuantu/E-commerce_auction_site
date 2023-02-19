@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 
 from .models import User, Product
@@ -68,12 +68,14 @@ def register(request):
 
 @login_required
 def create_listing(request):
+    profile = get_object_or_404(User)
     if request.method == "POST":
         prod = Product(bids=0, 
-                       seller=User.objects.get().username,
+                       seller=profile.id,
                        date_created=datetime.date.today())
         form = CreateListingForm(request.POST, request.FILES, instance=prod)
-        print(prod)
+        # print(prod)
+        print(request.FILES)
         price = form["price_base"].value()
         if form.is_valid():
             new_prod = form.save(commit=False)

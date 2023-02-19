@@ -1,0 +1,32 @@
+{% extends 'layouts/layout.html' %}
+
+{% block title %}
+    Create listing
+{% endblock title %}
+
+{% block body %}
+    <h2 class="text-center">Create New Listing</h2>
+    <div class="container">
+        <form action="{% url 'create listing' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="input-group mb-3 mt-5">
+                {{ form.prod_name }}
+            </div>
+            <div class="input-group mb-3">
+                <label class="align-items-center d-flex">{{ form.price_base.label_tag }}</label>
+                {{ form.price_base }}
+            </div>
+            <div class="input-group mb-3">
+                {{ form.image_path.label_tag }}
+                {{ form.image_path }}
+            </div>
+            <div class="input-group mb-3">
+                {{ form.description.label_tag }}
+                {{ form.description }}
+            </div>
+            <div class="input-group mb-3">
+                <button type="submit" class="btn btn-primary ms-auto">Submit</button>
+            </div>
+        </form>
+    </div>
+{% endblock body %}
