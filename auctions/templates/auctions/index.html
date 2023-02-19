@@ -3,5 +3,27 @@
 {% block body %}
     <h2>Active Listings</h2>
 
-    TODO
+    <div class="container-fluid d-flex flex-column">
+        {% for product in products %}
+            <a href="{% url 'index' %}" class="card text-bg-light border-dark mb-2">
+                <div class="row g-0">
+                    <div class="col-4">
+                        <img src="media/{{ product.image_path }}" >
+                    </div>
+                    <div class="col-8">
+                        <h5 class="card-title">{{ product.prod_name }}</h5>
+                        <div class="card-text">
+                            <b>Starting price:</b> ${{ product.price_base }}
+                        </div>
+                        <div class="card-text">
+                            {{ product.description }}
+                        </div> <br>
+                        <div class="card-text">
+                            Date created: {{ product.date_created }}
+                        </div>
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
 {% endblock %}
