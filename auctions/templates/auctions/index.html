@@ -5,20 +5,24 @@
 
     <div class="container-fluid d-flex flex-column">
         {% for product in products %}
-            <a href="{% url 'index' %}" class="card text-bg-light border-dark mb-2">
+            <a href="{% url 'index' %}" class="card text-bg-light border-dark mb-2 text-decoration-none">
                 <div class="row g-0">
-                    <div class="col-4">
-                        <img src="media/{{ product.image_path }}" >
+                    <div class="col-4 align-contents-center text-center">
+                        <img src="media/{{ product.image_path }}" height="200">
                     </div>
                     <div class="col-8">
-                        <h5 class="card-title">{{ product.prod_name }}</h5>
+                        <h4 class="card-title text-capitalize">{{ product.prod_name }}</h4>
                         <div class="card-text">
                             <b>Starting price:</b> ${{ product.price_base }}
                         </div>
                         <div class="card-text">
-                            {{ product.description }}
+                            {% if product.description %}
+                                {{ product.description }}
+                            {% else %}
+                                ---
+                            {% endif %}
                         </div> <br>
-                        <div class="card-text">
+                        <div class="card-text text-muted">
                             Date created: {{ product.date_created }}
                         </div>
                     </div>
