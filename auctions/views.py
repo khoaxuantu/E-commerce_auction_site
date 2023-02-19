@@ -71,7 +71,7 @@ def create_listing(request):
     profile = get_object_or_404(User)
     if request.method == "POST":
         prod = Product(bids=0, 
-                       seller=profile.id,
+                       seller=profile,
                        date_created=datetime.date.today())
         form = CreateListingForm(request.POST, request.FILES, instance=prod)
         # print(prod)
