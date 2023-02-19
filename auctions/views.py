@@ -11,7 +11,11 @@ import datetime
 
 
 def index(request):
-    return render(request, "auctions/index.html")
+    products = Product.objects.all()
+    # print(products)
+    return render(request, "auctions/index.html", {
+        "products": products
+    })
 
 
 def login_view(request):
@@ -68,7 +72,7 @@ def register(request):
 
 @login_required
 def create_listing(request):
-    profile = get_object_or_404(User)
+    profile = request.user
     if request.method == "POST":
         prod = Product(bids=0, 
                        seller=profile,
