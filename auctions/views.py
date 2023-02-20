@@ -100,6 +100,7 @@ def create_listing(request):
 def listing_page(request, product_id):
     product_detail = Product.objects.get(pk=product_id)
     profile = request.user
+    bidding_list = Bidinglist.objects.filter(product_id=product_id).order_by('-bid_price')
 
     if request.method == "POST":
         new_init_bid = Bidinglist(user=profile, product=product_detail, 
@@ -107,6 +108,10 @@ def listing_page(request, product_id):
         new_bid = BidForm(request.POST, instance=new_init_bid)
 
         if new_bid.is_valid():
+            new_price = Decimal(new_bid['bid_price'].value())
+            if bidding_list.count() == 0 or new_price > bidding_list.first().bid_price:
+                product_detail.price_cur = new_price
+                product_detail.save()
             new_bid.save()
             return HttpResponseRedirect(reverse('listings', args=(product_id,)))
         else:
@@ -120,7 +125,7 @@ def listing_page(request, product_id):
     return render(request, "auctions/listings.html", {
         "product": product_detail,
         'bidform': BidForm(),
-        'bid_count': Bidinglist.objects.filter(product_id=product_id).count()
+        'bid_count': bidding_list.count()
     })
 
 
