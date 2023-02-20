@@ -17,8 +17,8 @@ class Product(models.Model):
     """
     prod_name = models.CharField(max_length=128)
     date_created = models.DateTimeField(auto_now_add=True)
-    price_base = models.FloatField()
-    price_cur = models.FloatField()
+    price_base = models.DecimalField(max_digits=19, decimal_places=4)
+    price_cur = models.DecimalField(max_digits=19, decimal_places=4)
     bids = models.PositiveIntegerField()
     seller = models.ForeignKey("User", on_delete=models.CASCADE)
     image_path = models.ImageField(upload_to=user_directory_path, blank=False, verbose_name="Image path")
@@ -56,6 +56,8 @@ class Bidinglist(models.Model):
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_bid_set")
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="prod_bid_set")
+    bid_price = models.DecimalField(max_digits=19, decimal_places=4, default=None)
+    bid_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
         return f"{self.user}: -- {self.product}"

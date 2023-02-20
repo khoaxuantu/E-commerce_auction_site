@@ -1,5 +1,6 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
+from decimal import Decimal
 
 from .models import *
 
@@ -27,6 +28,7 @@ class CreateListingForm(forms.ModelForm):
             "aria-label": "listing price",
             "name": "price"
         })
+        self.fields['price_base'].min_value = Decimal('0.01')
         self.fields['image_path'].widget = forms.ClearableFileInput(attrs={
             "class": "ms-2"
         })
