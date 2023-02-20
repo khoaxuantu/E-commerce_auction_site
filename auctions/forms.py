@@ -35,3 +35,19 @@ class CreateListingForm(forms.ModelForm):
         self.fields['description'].widget = forms.Textarea(attrs={
             "class": "form-control ms-2"
         })
+
+
+class BidForm(forms.ModelForm):
+    bid_price = forms.DecimalField(min_value=Decimal('0.01'),
+                                   max_digits=19, decimal_places=4,
+                                   widget=forms.NumberInput(attrs={
+                                        'placeholder': 'Bid',
+                                        'class': 'form-control mb-1',
+                                        'aria-label': 'bid price',
+                                        'name': 'bid_price'
+                                    }))
+
+    class Meta:
+        model = Bidinglist
+        fields = ['bid_price']
+        exclude = ['user', 'product', 'bid_time']

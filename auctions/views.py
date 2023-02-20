@@ -5,14 +5,14 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 
-from .models import User, Product
+from .models import *
 from .forms import *
 import datetime
 
 
 def index(request):
-    products = Product.objects.all()
-    # print(products)
+    products = Product.objects.all().order_by('date_created')
+    # print(products.values_list('id', flat=True))
     return render(request, "auctions/index.html", {
         "products": products
     })
@@ -97,8 +97,31 @@ def create_listing(request):
     })
 
 
-def listing_page(request):
-    pass
+def listing_page(request, product_id):
+    product_detail = Product.objects.get(pk=product_id)
+    profile = request.user
+
+    if request.method == "POST":
+        new_init_bid = Bidinglist(user=profile, product=product_detail, 
+                             bid_time= datetime.date.today())
+        new_bid = BidForm(request.POST, instance=new_init_bid)
+
+        if new_bid.is_valid():
+            new_bid.save()
+            return HttpResponseRedirect(reverse('listings', args=(product_id,)))
+        else:
+            print(new_bid.errors)
+            return render(request, "auctions/listings.html", {
+                "product": product_detail,
+                'bidform': new_bid,
+                "bid_count": Bidinglist.objects.filter(product_id=product_id).count()
+            })
+
+    return render(request, "auctions/listings.html", {
+        "product": product_detail,
+        'bidform': BidForm(),
+        'bid_count': Bidinglist.objects.filter(product_id=product_id).count()
+    })
 
 
 def watchlist_page(request):
