@@ -4,6 +4,10 @@ from decimal import Decimal
 
 from .models import *
 
+class CustomMMCF(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, Categories) -> str:
+        return f"{Categories.name}"
+
 class CreateListingForm(forms.ModelForm):
     class Meta:
         model = Product
@@ -36,11 +40,13 @@ class CreateListingForm(forms.ModelForm):
         self.fields['description'].widget = forms.Textarea(attrs={
             "class": "form-control ms-2"
         })
-        self.fields['category'].widget = forms.CheckboxSelectMultiple(attrs={
+
+    category = CustomMMCF(
+        queryset=Categories.objects.all(),
+        widget=forms.CheckboxSelectMultiple(attrs={
             "class": "ms-2"
         })
-        print(Categories.objects.all())
-        self.fields['category'].queryset = Categories.objects.all()
+    )
 
 
 class BidForm(forms.ModelForm):
