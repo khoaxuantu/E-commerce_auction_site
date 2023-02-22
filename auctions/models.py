@@ -11,7 +11,7 @@ class Categories(models.Model):
     name = models.CharField(max_length=64)
 
     def __str__(self) -> str:
-        return f"{self.id}: {self.name}"
+        return f"{self.name}"
 
 
 class Product(models.Model):

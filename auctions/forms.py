@@ -7,12 +7,13 @@ from .models import *
 class CreateListingForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['prod_name', 'price_base', 'image_path', 'description']
-        exclude = ['date_created', 'price_cur', 'bids', 'seller', 'category']
+        fields = ['prod_name', 'price_base', 'image_path', 'description', 'category']
+        exclude = ['date_created', 'price_cur', 'bids', 'seller']
         labels = {
             'price_base': _('Price*'),
             'image_path': _('Image*'),
-            'description': _('Brief description')
+            'description': _('Brief description'),
+            'category': _('Catgories')
         }
 
     def __init__(self, *args, **kwargs):
@@ -35,6 +36,11 @@ class CreateListingForm(forms.ModelForm):
         self.fields['description'].widget = forms.Textarea(attrs={
             "class": "form-control ms-2"
         })
+        self.fields['category'].widget = forms.CheckboxSelectMultiple(attrs={
+            "class": "ms-2"
+        })
+        print(Categories.objects.all())
+        self.fields['category'].queryset = Categories.objects.all()
 
 
 class BidForm(forms.ModelForm):

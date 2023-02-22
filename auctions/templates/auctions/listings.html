@@ -34,8 +34,8 @@
                 <li>
                     Category: 
                     {% if product.category %}
-                        {% for c in product.category %}
-                            <a href="">{{ c.name }}</a> 
+                        {% for c in product.category.all %}
+                            {<a href="">{{ c.name }}</a>} 
                         {% endfor %}
                     {% else %}
                         No Category Listed
