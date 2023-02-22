@@ -133,7 +133,15 @@ def listing_page(request, product_id):
 
 @login_required
 def watchlist_page(request):
-    pass
+    profile = request.user
+    watchlist = Watchlist.objects.filter(user_id=profile.id)
+    prods = Product.objects.filter(pk__in=watchlist.values('product_id'))
+    
+    return render(request, "auctions/index.html", {
+        "products": prods,
+        "watchlist": True
+    })
+
 
 @login_required
 def addto_watchlist(request, product_id):

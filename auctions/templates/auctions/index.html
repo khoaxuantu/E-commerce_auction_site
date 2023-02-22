@@ -3,6 +3,8 @@
 {% block body %}
     {% if category %}
         <h2>Category: {{ category }}</h2>
+    {% elif watchlist %}
+        <h2>Watchlist</h2>
     {% else %}
         <h2>Active Listings</h2>
     {% endif %}
