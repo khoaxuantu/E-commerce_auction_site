@@ -5,7 +5,26 @@
 {% endblock title %}
 
 {% block body %}
-    <h2>Listing: {{ product.prod_name | capfirst }}</h2>
+    <div class="d-flex container-fluid align-items-center">
+        <h2>Listing: {{ product.prod_name | capfirst }}</h2>
+        {% if in_watchlist %}
+            <span class="d-inline-block" 
+                tabindex="0" 
+                data-bs-toggle="popover" 
+                data-bs-trigger="hover focus"
+                data-bs-content="Click to unwatch">
+                <a href="{% url 'unwatch' product.id user.id%}" class="ms-5 btn btn-success h-75">Watched</a>
+            </span>
+            <script>
+                document.querySelectorAll('[data-bs-toggle="popover"]')
+                    .forEach(popover => {
+                        new bootstrap.Popover(popover)
+                })
+            </script>
+        {% else %}
+            <a href="{% url 'add to watchlist' product.id %}" class="ms-5 btn btn-warning h-75">Add to watchlist</a>
+        {% endif %}
+    </div>
 
     <div class="container-fluid">
         <div class="text-center">

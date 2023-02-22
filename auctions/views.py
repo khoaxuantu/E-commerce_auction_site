@@ -96,11 +96,12 @@ def create_listing(request):
         "form": CreateListingForm()
     })
 
-
+@login_required
 def listing_page(request, product_id):
     product_detail = Product.objects.get(pk=product_id)
     profile = request.user
     bidding_list = Bidinglist.objects.filter(product_id=product_id).order_by('-bid_price')
+    in_watchlist = Watchlist.objects.filter(product_id=product_id, user_id=profile.id)
 
     if request.method == "POST":
         new_init_bid = Bidinglist(user=profile, product=product_detail, 
@@ -119,20 +120,40 @@ def listing_page(request, product_id):
             return render(request, "auctions/listings.html", {
                 "product": product_detail,
                 'bidform': new_bid,
-                "bid_count": Bidinglist.objects.filter(product_id=product_id).count()
+                "bid_count": Bidinglist.objects.filter(product_id=product_id).count(),
+                "in_watchlist": in_watchlist
             })
 
     return render(request, "auctions/listings.html", {
         "product": product_detail,
         'bidform': BidForm(),
-        'bid_count': bidding_list.count()
+        'bid_count': bidding_list.count(),
+        "in_watchlist": in_watchlist
     })
 
-
+@login_required
 def watchlist_page(request):
     pass
 
+@login_required
+def addto_watchlist(request, product_id):
+    product_detail = Product.objects.get(pk=product_id)
+    profile = request.user
 
+    profile.watchlist.add(product_detail)
+
+    return HttpResponseRedirect(reverse('listings', args=(product_id,)))
+
+
+@login_required
+def delete_from_watchlist(request, product_id, user_id):
+    watchlist_record = Watchlist.objects.filter(product_id=product_id, user_id=user_id)
+    watchlist_record.delete()
+
+    return HttpResponseRedirect(reverse('listings', args=(product_id,)))
+
+
+@login_required
 def catgories(request, category_id):
     category_info = Categories.objects.get(pk=category_id)
     product_list = category_info.prod_categories.all().order_by("date_created")
