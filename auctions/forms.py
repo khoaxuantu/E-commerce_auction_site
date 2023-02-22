@@ -4,6 +4,7 @@ from decimal import Decimal
 
 from .models import *
 
+
 class CustomMMCF(forms.ModelMultipleChoiceField):
     def label_from_instance(self, Categories) -> str:
         return f"{Categories.name}"

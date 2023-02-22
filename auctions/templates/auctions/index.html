@@ -1,14 +1,18 @@
 {% extends "layouts/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
+    {% if category %}
+        <h2>Category: {{ category }}</h2>
+    {% else %}
+        <h2>Active Listings</h2>
+    {% endif %}
 
     <div class="container-fluid d-flex flex-column">
         {% for product in products %}
             <a href="{% url 'listings' product.id %}" class="card text-bg-light border-dark mb-2 text-decoration-none">
                 <div class="row g-0">
                     <div class="col-4 align-contents-center text-center">
-                        <img src="media/{{ product.image_path }}" height="200">
+                        <img src="../media/{{ product.image_path }}" height="200">
                     </div>
                     <div class="col-8">
                         <h4 class="card-title">{{ product.prod_name | capfirst }}</h4>

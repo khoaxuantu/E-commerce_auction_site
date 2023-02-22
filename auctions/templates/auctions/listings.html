@@ -35,7 +35,7 @@
                     Category: 
                     {% if product.category %}
                         {% for c in product.category.all %}
-                            {<a href="">{{ c.name }}</a>} 
+                            {<a href="{% url 'category' c.id %}">{{ c.name }}</a>} 
                         {% endfor %}
                     {% else %}
                         No Category Listed
