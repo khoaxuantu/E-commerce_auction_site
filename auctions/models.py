@@ -10,6 +10,9 @@ def user_directory_path(instance, filename):
 class Categories(models.Model):
     name = models.CharField(max_length=64)
 
+    def __str__(self) -> str:
+        return f"{self.id}: {self.name}"
+
 
 class Product(models.Model):
     """
@@ -24,7 +27,7 @@ class Product(models.Model):
     image_path = models.ImageField(upload_to=user_directory_path, blank=False, verbose_name="Image path")
     description = models.TextField(blank=True)
 
-    category = models.ForeignKey(Categories, on_delete=models.SET_NULL, null=True)
+    category = models.ManyToManyField(Categories, related_name="prod_categories", blank=True)
 
     def __str__(self) -> str:
         return f"{self.seller.id}_{self.seller.username}_{self.prod_name}"
