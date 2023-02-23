@@ -162,11 +162,18 @@ def delete_from_watchlist(request, product_id, user_id):
 
 
 @login_required
-def catgories(request, category_id):
+def categories(request, category_id):
     category_info = Categories.objects.get(pk=category_id)
     product_list = category_info.prod_categories.all().order_by("date_created")
 
     return render(request, "auctions/index.html", {
         "category": category_info.name,
         "products": product_list
+    })
+
+
+def categories_view(request):
+    categories_list = Categories.objects.all().order_by('name')
+    return render(request, "auctions/category.html", {
+        "categories": categories_list
     })

@@ -1,0 +1,23 @@
+{% extends 'layouts/layout.html' %}
+
+{% block title %}
+    Categories
+{% endblock title %}
+
+{% block body %}
+    <div class="container">
+        {% for category in categories %}
+            {% if forloop.counter0|divisibleby:2 %}
+                <div class="row align-items-center text-center">
+            {% endif %}
+                    <div class="col-5 mb-1">
+                        <a href="{% url 'category' category.id %}" class="btn btn-secondary w-75">
+                            {{ category.name }}
+                        </a>
+                    </div>
+            {% if forloop.counter|divisibleby:2 or forloop.last %}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock body %}
