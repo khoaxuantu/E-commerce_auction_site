@@ -102,6 +102,7 @@ def listing_page(request, product_id):
     profile = request.user
     bidding_list = Bidinglist.objects.filter(product_id=product_id).order_by('-bid_price')
     in_watchlist = Watchlist.objects.filter(product_id=product_id, user_id=profile.id)
+    comments = Comments.objects.filter(product_id=product_id, user=profile)
 
     if request.method == "POST":
         new_init_bid = Bidinglist(user=profile, product=product_detail, 
@@ -121,14 +122,18 @@ def listing_page(request, product_id):
                 "product": product_detail,
                 'bidform': new_bid,
                 "bid_count": Bidinglist.objects.filter(product_id=product_id).count(),
-                "in_watchlist": in_watchlist
+                "in_watchlist": in_watchlist,
+                "comments": comments,
+                "comment_form": CommentForm()
             })
 
     return render(request, "auctions/listings.html", {
         "product": product_detail,
         'bidform': BidForm(),
         'bid_count': bidding_list.count(),
-        "in_watchlist": in_watchlist
+        "in_watchlist": in_watchlist,
+        "comments": comments,
+        "comment_form": CommentForm()
     })
 
 @login_required
@@ -177,3 +182,18 @@ def categories_view(request):
     return render(request, "auctions/category.html", {
         "categories": categories_list
     })
+
+
+@login_required
+def add_comment(request, product_id):
+
+    if request.method == "POST":
+        product_detail = Product.objects.filter(pk=product_id).first()
+        profile = request.user
+        pre_cmt = Comments(user=profile, 
+                           product=product_detail,
+                           date_added=datetime.datetime.now())
+        new_cmt = CommentForm(request.POST, instance=pre_cmt)
+        new_cmt.save()
+
+    return HttpResponseRedirect(reverse('listings', args=(product_id,)))

@@ -64,3 +64,19 @@ class BidForm(forms.ModelForm):
         model = Bidinglist
         fields = ['bid_price']
         exclude = ['user', 'product', 'bid_time']
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comments
+        fields = ['comment']
+        exclude = ['user', 'product', 'date_added']
+        widgets = {
+            'comment': forms.Textarea(attrs={
+                "class": "form-control",
+                "placeholder": "Write your comment"
+            })
+        }
+        labels = {
+            'comment': ''
+        }
