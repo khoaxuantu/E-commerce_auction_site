@@ -13,7 +13,7 @@ class CreateListingForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ['prod_name', 'price_base', 'image_path', 'description', 'category']
-        exclude = ['date_created', 'price_cur', 'bids', 'seller']
+        exclude = ['date_created', 'price_cur', 'seller']
         labels = {
             'price_base': _('Price*'),
             'image_path': _('Image*'),

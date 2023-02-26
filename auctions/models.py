@@ -14,27 +14,48 @@ class Categories(models.Model):
         return f"{self.id}: {self.name}"
 
 
-class Product(models.Model):
+class AbstractProduct(models.Model):
     """
-    A class implementing the product's detail information.
+    An abstract class implementing the product's detail information.
     """
     prod_name = models.CharField(max_length=128)
     date_created = models.DateTimeField(auto_now_add=True)
     price_base = models.DecimalField(max_digits=19, decimal_places=4)
     price_cur = models.DecimalField(max_digits=19, decimal_places=4)
-    bids = models.PositiveIntegerField()
-    seller = models.ForeignKey("User", on_delete=models.CASCADE)
+    seller = models.ForeignKey("User", on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_prod_selling")
     image_path = models.ImageField(upload_to=user_directory_path, blank=False, verbose_name="Image path")
     description = models.TextField(blank=True)
 
-    category = models.ManyToManyField(Categories, related_name="prod_categories", blank=True)
+    category = models.ManyToManyField(Categories, related_name="%(app_label)s_%(class)s_prod_categories", blank=True)
+
+    class Meta:
+        abstract = True
 
     def __str__(self) -> str:
         return f"{self.seller.id}_{self.seller.username}_{self.prod_name}"
+    
 
+class Product(AbstractProduct):
+    """
+    A product class that is used as active products,
+    """
     def get_fields(self):
         return [(field.name, field.value_to_string(self)) for field in Product._meta.fields]
     
+
+class ArchiveProduct(AbstractProduct):
+    """
+    A class implementing the detail information of the archive product
+    which is inactive (i.e has been sold). It inherits the fields of
+    the Product class.
+    """
+    winner = models.ForeignKey("User", on_delete=models.CASCADE, related_name="win_prod", blank=True, null=True)
+    date_sold = models.DateTimeField(auto_now_add=True)
+    active_product_id = models.BigIntegerField()
+
+    class Meta():
+        db_table = "auctions_archive_product"
+
 
 class User(AbstractUser):
     """
