@@ -52,6 +52,7 @@ class CreateListingForm(forms.ModelForm):
 
 class BidForm(forms.ModelForm):
     bid_price = forms.DecimalField(min_value=Decimal('0.01'),
+                                   label="",
                                    max_digits=19, decimal_places=4,
                                    widget=forms.NumberInput(attrs={
                                         'placeholder': 'Bid',
