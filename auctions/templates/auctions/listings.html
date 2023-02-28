@@ -80,7 +80,7 @@
                 </li>
                 <li>
                     Category: 
-                    {% if product.category %}
+                    {% if product.category.count != 0 %}
                         {% for c in product.category.all %}
                             {<a href="{% url 'category' c.id %}">{{ c.name }}</a>} 
                         {% endfor %}
