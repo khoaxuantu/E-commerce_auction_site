@@ -41,12 +41,36 @@
         </h2>
         <!-- Bid count -->
         <div class="mb-3">
-            {{ bid_count }} bid(s) so far.<br>
-            <form  action="{% url 'listings' product.id %}" method="post">
-                {% csrf_token %}
-                {{ bidform }}
-                <button type="submit" class="btn btn-primary">Place Bid</button>
-            </form>
+            {{ bids.count }} bid(s) so far. 
+            {% if user.id == product.seller.id %}
+                You are the seller of this product. <br>
+                <span class="d-inline-block"
+                    tabindex="0"
+                    data-bs-toggle="popover"
+                    data-bs-trigger="hover focus"
+                    data-bs-content="Click to close the current active product. After the bid
+                    is closed, the product will be archived and be sent to the winner.">
+                    <a href="{% url 'close bid' product.id bids.first.user.id %}" class="btn btn-danger">Close the bid</a>
+                </span>
+                <script>
+                    document.querySelectorAll('[data-bs-toggle="popover"]')
+                        .forEach(popover => {
+                            new bootstrap.Popover(popover)
+                    })
+                </script>
+            {% else %}    
+                Your bid is
+                {% if first_bid is False%} 
+                    not
+                {% endif %}
+                the current bid.
+                <br>
+                <form  action="{% url 'listings' product.id %}" method="post">
+                    {% csrf_token %}
+                    {{ bidform }}
+                    <button type="submit" class="btn btn-primary">Place Bid</button>
+                </form>
+            {% endif %}
         </div>
         <div class="mb-3">
             <div class="fs-3"><b>Details</b></div>

@@ -71,6 +71,40 @@ def register(request):
 
 
 @login_required
+def categories_view(request):
+    categories_list = Categories.objects.all().order_by('name')
+    return render(request, "auctions/category.html", {
+        "categories": categories_list
+    })
+
+
+@login_required
+def categories(request, category_id):
+    category_info = Categories.objects.get(pk=category_id)
+    product_list = category_info.prod_categories.all().order_by("date_created")
+
+    return render(request, "auctions/index.html", {
+        "category": category_info.name,
+        "products": product_list
+    })
+
+
+@login_required
+def add_comment(request, product_id):
+
+    if request.method == "POST":
+        product_detail = Product.objects.filter(pk=product_id).first()
+        profile = request.user
+        pre_cmt = Comments(user=profile, 
+                           product=product_detail,
+                           date_added=datetime.datetime.now())
+        new_cmt = CommentForm(request.POST, instance=pre_cmt)
+        new_cmt.save()
+
+    return HttpResponseRedirect(reverse('listings', args=(product_id,)))
+
+
+@login_required
 def create_listing(request):
     profile = request.user
     if request.method == "POST":
@@ -95,13 +129,22 @@ def create_listing(request):
         "form": CreateListingForm()
     })
 
+
 @login_required
 def listing_page(request, product_id):
-    product_detail = Product.objects.get(pk=product_id)
+    try:
+        product_detail = Product.objects.get(pk=product_id)
+    except:
+        return HttpResponse("404 Not Found!")
     profile = request.user
     bidding_list = Bidinglist.objects.filter(product_id=product_id).order_by('-bid_price')
     in_watchlist = Watchlist.objects.filter(product_id=product_id, user_id=profile.id)
-    comments = Comments.objects.filter(product_id=product_id, user=profile)
+    comments = Comments.objects.filter(product_id=product_id)
+
+    if bidding_list.count() != 0:
+        firstBid = bidding_list.first().user.id == profile.id
+    else:
+        firstBid = False
 
     if request.method == "POST":
         new_init_bid = Bidinglist(user=profile, product=product_detail, 
@@ -118,22 +161,54 @@ def listing_page(request, product_id):
         else:
             print(new_bid.errors)
             return render(request, "auctions/listings.html", {
-                "product": product_detail,
+                "product": Product.objects.get(pk=product_id),
                 'bidform': new_bid,
-                "bid_count": Bidinglist.objects.filter(product_id=product_id).count(),
+                "bids": Bidinglist.objects.filter(product_id=product_id),
                 "in_watchlist": in_watchlist,
                 "comments": comments,
-                "comment_form": CommentForm()
+                "comment_form": CommentForm(),
+                "first_bid": firstBid
             })
 
     return render(request, "auctions/listings.html", {
         "product": product_detail,
         'bidform': BidForm(),
-        'bid_count': bidding_list.count(),
+        'bids': bidding_list,
         "in_watchlist": in_watchlist,
         "comments": comments,
-        "comment_form": CommentForm()
+        "comment_form": CommentForm(),
+        "first_bid": firstBid
     })
+
+
+@login_required
+def close_bid(request, product_id, winner_id):
+    product_detail = Product.objects.get(pk=product_id)
+    winner = User.objects.get(pk=winner_id)
+    new_archive_prod = ArchiveProduct(active_product_id=product_id,
+                                      date_sold=datetime.datetime.now(),
+                                      winner=winner)
+    new_archive_prod.__dict__.update(product_detail.__dict__)
+    new_archive_prod.category = product_detail.category
+    product_detail.delete()
+    new_archive_prod.save()
+
+    return HttpResponseRedirect(reverse('archive product', args=(product_id,)))
+
+
+@login_required
+def archive_view(request, product_id):
+    try:
+        product_detail = ArchiveProduct.objects.get(active_product_id=product_id)
+    except:
+        return HttpResponse("404 Not Found!")
+    comments = Comments.objects.filter(product_id=product_id)
+
+    return render(request, "auctions/archive.html", {
+        "product": product_detail,
+        "comments": comments
+    })
+
 
 @login_required
 def watchlist_page(request):
@@ -161,38 +236,5 @@ def addto_watchlist(request, product_id):
 def delete_from_watchlist(request, product_id, user_id):
     watchlist_record = Watchlist.objects.filter(product_id=product_id, user_id=user_id)
     watchlist_record.delete()
-
-    return HttpResponseRedirect(reverse('listings', args=(product_id,)))
-
-
-@login_required
-def categories(request, category_id):
-    category_info = Categories.objects.get(pk=category_id)
-    product_list = category_info.prod_categories.all().order_by("date_created")
-
-    return render(request, "auctions/index.html", {
-        "category": category_info.name,
-        "products": product_list
-    })
-
-
-def categories_view(request):
-    categories_list = Categories.objects.all().order_by('name')
-    return render(request, "auctions/category.html", {
-        "categories": categories_list
-    })
-
-
-@login_required
-def add_comment(request, product_id):
-
-    if request.method == "POST":
-        product_detail = Product.objects.filter(pk=product_id).first()
-        profile = request.user
-        pre_cmt = Comments(user=profile, 
-                           product=product_detail,
-                           date_added=datetime.datetime.now())
-        new_cmt = CommentForm(request.POST, instance=pre_cmt)
-        new_cmt.save()
 
     return HttpResponseRedirect(reverse('listings', args=(product_id,)))
