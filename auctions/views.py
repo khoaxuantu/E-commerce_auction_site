@@ -81,7 +81,7 @@ def categories_view(request):
 @login_required
 def categories(request, category_id):
     category_info = Categories.objects.get(pk=category_id)
-    product_list = category_info.prod_categories.all().order_by("date_created")
+    product_list = category_info.auctions_product_prod_categories.all().order_by("date_created")
 
     return render(request, "auctions/index.html", {
         "category": category_info.name,
