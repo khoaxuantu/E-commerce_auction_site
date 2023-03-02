@@ -191,13 +191,14 @@ def listing_page(request, product_id):
 def close_bid(request, product_id, winner_id):
     product_detail = Product.objects.get(pk=product_id)
     winner = User.objects.get(pk=winner_id)
+    categories = product_detail.category.all()
     new_archive_prod = ArchiveProduct(active_product_id=product_id,
                                       date_sold=datetime.datetime.now(),
                                       winner=winner)
     new_archive_prod.__dict__.update(product_detail.__dict__)
-    new_archive_prod.category = product_detail.category
-    product_detail.delete()
     new_archive_prod.save()
+    new_archive_prod.category.add(*categories)
+    product_detail.delete()
 
     messages.info(request, f'Listing closed! The winner is {winner.username}\
                    (id: {winner.id})')
