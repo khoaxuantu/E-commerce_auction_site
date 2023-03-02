@@ -39,6 +39,10 @@
                     <a href="">{{ product.winner.username }}</a>
                 </li>
                 <li>
+                    Date sold:
+                    {{ product.date_sold }}
+                </li>
+                <li>
                     Category: 
                     {% if product.category %}
                         {% for c in product.category.all %}
