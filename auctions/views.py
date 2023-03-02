@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
@@ -100,7 +101,7 @@ def add_comment(request, product_id):
                            date_added=datetime.datetime.now())
         new_cmt = CommentForm(request.POST, instance=pre_cmt)
         new_cmt.save()
-
+    messages.success(request, 'Comment added.')
     return HttpResponseRedirect(reverse('listings', args=(product_id,)))
 
 
@@ -119,8 +120,10 @@ def create_listing(request):
             new_prod.price_cur = price
             new_prod.save()
             form.save_m2m()
+            messages.success(request, 'Your listing is created.')
         else:
             print(form.errors)
+            messages.error(request, 'Invalid input!')
             return render(request, "auctions/create_listing.html", {
                 "form": form
             })
@@ -146,6 +149,7 @@ def listing_page(request, product_id):
     else:
         firstBid = False
 
+    # Add a new bid
     if request.method == "POST":
         new_init_bid = Bidinglist(user=profile, product=product_detail, 
                              bid_time= datetime.date.today())
@@ -157,9 +161,11 @@ def listing_page(request, product_id):
                 product_detail.price_cur = new_price
                 product_detail.save()
             new_bid.save()
+            messages.success(request, 'Place bid successfully!')
             return HttpResponseRedirect(reverse('listings', args=(product_id,)))
         else:
             print(new_bid.errors)
+            messages.error(request, 'Invalid bid!')
             return render(request, "auctions/listings.html", {
                 "product": Product.objects.get(pk=product_id),
                 'bidform': new_bid,
@@ -193,6 +199,8 @@ def close_bid(request, product_id, winner_id):
     product_detail.delete()
     new_archive_prod.save()
 
+    messages.info(request, f'Listing closed! The winner is {winner.username}\
+                   (id: {winner.id})')
     return HttpResponseRedirect(reverse('archive product', args=(product_id,)))
 
 
@@ -228,7 +236,7 @@ def addto_watchlist(request, product_id):
     profile = request.user
 
     profile.watchlist.add(product_detail)
-
+    messages.success(request, 'Added to your watchlist!')
     return HttpResponseRedirect(reverse('listings', args=(product_id,)))
 
 
@@ -237,4 +245,5 @@ def delete_from_watchlist(request, product_id, user_id):
     watchlist_record = Watchlist.objects.filter(product_id=product_id, user_id=user_id)
     watchlist_record.delete()
 
+    messages.info(request, 'Removed from your watchlist!')
     return HttpResponseRedirect(reverse('listings', args=(product_id,)))

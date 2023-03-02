@@ -9,6 +9,7 @@
         <link href="{% static 'auctions/styles.css' %}" rel="stylesheet">
     </head>
     <body>
+        {% include 'include/messages.html' %}
         <h1>Auctions</h1>
         <div>
             {% if user.is_authenticated %}
