@@ -157,6 +157,12 @@ def listing_page(request, product_id):
 
         if new_bid.is_valid():
             new_price = Decimal(new_bid['bid_price'].value())
+            # If the price is less than the current bid
+            if new_price < product_detail.price_cur or \
+                (bidding_list.count() != 0 and new_price <= bidding_list.first().bid_price):
+                messages.error(request, 'Your bid must be larger than the current bid.')
+                return HttpResponseRedirect(reverse('listings', args=(product_id,)))
+            # Else save the new bid
             if bidding_list.count() == 0 or new_price > bidding_list.first().bid_price:
                 product_detail.price_cur = new_price
                 product_detail.save()

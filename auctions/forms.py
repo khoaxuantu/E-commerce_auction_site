@@ -58,7 +58,8 @@ class BidForm(forms.ModelForm):
                                         'placeholder': 'Bid',
                                         'class': 'form-control mb-1',
                                         'aria-label': 'bid price',
-                                        'name': 'bid_price'
+                                        'name': 'bid_price',
+                                        'step': 0.01
                                     }))
 
     class Meta:
