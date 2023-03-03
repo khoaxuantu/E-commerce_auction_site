@@ -6,4 +6,8 @@ and add listings to a "watchlist".
 
 ## Tools
 - [Django](https://docs.djangoproject.com/)
+- [Bootstrap](https://getbootstrap.com/)
 - [PostgreSQL](https://www.postgresql.org/)
+
+## Demo
+[Youtube](https://youtu.be/dC6IBfkbZs8)
