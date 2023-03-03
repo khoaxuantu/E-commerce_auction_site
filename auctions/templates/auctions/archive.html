@@ -25,8 +25,13 @@
             ${{ product.price_cur | floatformat:2 }}
         </h2>
         <!-- Bid count -->
-        <div class="mb-3">
-            <button disabled class="btn btn-success">Sold</button><br>
+        <div class="mb-3 d-flex align-items-center">
+            <button disabled class="btn btn-success">Sold</button>
+            {% if user.id == product.winner.id %}
+                <div class="ms-5">
+                    Congratulation! You are the winner.
+                </div>
+            {% endif %}
         </div>
         <div class="mb-3">
             <div class="fs-3"><b>Details</b></div>
