@@ -50,7 +50,11 @@
                     data-bs-trigger="hover focus"
                     data-bs-content="Click to close the current active product. After the bid
                     is closed, the product will be archived and be sent to the winner.">
-                    <a href="{% url 'close bid' product.id bids.first.user.id %}" class="btn btn-danger">Close the bid</a>
+                    <a href="{% if bids.first %}
+                        {% url 'close bid' product.id bids.first.user.id %}
+                    {% else %}
+                        {% url 'close bid' product.id 0 %}
+                    {% endif %}" class="btn btn-danger">Close the bid</a>
                 </span>
                 <script>
                     document.querySelectorAll('[data-bs-toggle="popover"]')

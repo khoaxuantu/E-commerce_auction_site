@@ -196,6 +196,10 @@ def listing_page(request, product_id):
 @login_required
 def close_bid(request, product_id, winner_id):
     product_detail = Product.objects.get(pk=product_id)
+    # If a user closes the listing without a bid
+    if winner_id == 0:
+        product_detail.delete()
+        return HttpResponseRedirect(reverse('index'))
     winner = User.objects.get(pk=winner_id)
     categories = product_detail.category.all()
     new_archive_prod = ArchiveProduct(active_product_id=product_id,
