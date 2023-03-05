@@ -12,6 +12,10 @@ import datetime
 
 
 def index(request):
+    """
+    A route representing the index view.
+    The products are displayed here.
+    """
     products = Product.objects.all().order_by('date_created')
     # print(products.values_list('id', flat=True))
     return render(request, "auctions/index.html", {
@@ -20,6 +24,9 @@ def index(request):
 
 
 def login_view(request):
+    """
+    A route representing the login view.
+    """
     if request.method == "POST":
 
         # Attempt to sign user in
@@ -40,11 +47,17 @@ def login_view(request):
 
 
 def logout_view(request):
+    """
+    A route representing the logout view
+    """
     logout(request)
     return HttpResponseRedirect(reverse("index"))
 
 
 def register(request):
+    """
+    A route representing the register view
+    """
     if request.method == "POST":
         username = request.POST["username"]
         email = request.POST["email"]
@@ -73,6 +86,11 @@ def register(request):
 
 @login_required
 def categories_view(request):
+    """
+    A route representing the categories view.
+    All categories are passed to the corresponding template which
+    navigate to the list of each category.
+    """
     categories_list = Categories.objects.all().order_by('name')
     return render(request, "auctions/category.html", {
         "categories": categories_list
@@ -81,6 +99,11 @@ def categories_view(request):
 
 @login_required
 def categories(request, category_id):
+    """
+    A route representing the list of each category.
+    The category info is queried by category_id, then it calls to the
+    reversed object 'prod_categories' to collect the product list.
+    """
     category_info = Categories.objects.get(pk=category_id)
     product_list = category_info.auctions_product_prod_categories.all().order_by("date_created")
 
@@ -92,13 +115,18 @@ def categories(request, category_id):
 
 @login_required
 def add_comment(request, product_id):
-
+    """
+    The route representing the adding-comment view.
+    """
     if request.method == "POST":
+        # Collect required info
         product_detail = Product.objects.filter(pk=product_id).first()
         profile = request.user
+        # Initialize a new object Comments
         pre_cmt = Comments(user=profile, 
                            product=product_detail,
                            date_added=datetime.datetime.now())
+        # Integrate with the CommentForm collected by request
         new_cmt = CommentForm(request.POST, instance=pre_cmt)
         new_cmt.save()
     messages.success(request, 'Comment added.')
@@ -107,15 +135,22 @@ def add_comment(request, product_id):
 
 @login_required
 def create_listing(request):
+    """
+    A route representing the listing create view.
+    """
+    # Get the required info
     profile = request.user
     if request.method == "POST":
         prod = Product(seller=profile,
                        date_created=datetime.date.today())
+        # Integrate with the CreateListingForm collected from the request
         form = CreateListingForm(request.POST, request.FILES, instance=prod)
         # print(prod)
-        print(request.FILES)
+        # print(request.FILES)
         price = form["price_base"].value()
+        # Validate the form, if it is valid then save.
         if form.is_valid():
+            # Due to there are ManyToMany relationships, the save_m2m method is required
             new_prod = form.save(commit=False)
             new_prod.price_cur = price
             new_prod.save()
@@ -135,6 +170,10 @@ def create_listing(request):
 
 @login_required
 def listing_page(request, product_id):
+    """
+    A route representing the active listing page.
+    """
+    # Get required info
     try:
         product_detail = Product.objects.get(pk=product_id)
     except:
@@ -144,6 +183,9 @@ def listing_page(request, product_id):
     in_watchlist = Watchlist.objects.filter(product_id=product_id, user_id=profile.id)
     comments = Comments.objects.filter(product_id=product_id)
 
+    # Check if there are any bids of the product. Initialize a 'firstBid' flag
+    # that will be passed to the template. This flag is used to determine if the 
+    # client is leading the bid.
     if bidding_list.count() != 0:
         firstBid = bidding_list.first().user.id == profile.id
     else:
@@ -195,6 +237,11 @@ def listing_page(request, product_id):
 
 @login_required
 def close_bid(request, product_id, winner_id):
+    """
+    A route representing bid closing navigation.
+    The active product will be removed from the Product table and add to 
+    the Archive_Product table
+    """
     product_detail = Product.objects.get(pk=product_id)
     # If a user closes the listing without a bid
     if winner_id == 0:
@@ -202,12 +249,16 @@ def close_bid(request, product_id, winner_id):
         return HttpResponseRedirect(reverse('index'))
     winner = User.objects.get(pk=winner_id)
     categories = product_detail.category.all()
+
+    # Initialize a new ArchiveProduct object then update it with the product
     new_archive_prod = ArchiveProduct(active_product_id=product_id,
                                       date_sold=datetime.datetime.now(),
                                       winner=winner)
     new_archive_prod.__dict__.update(product_detail.__dict__)
     new_archive_prod.save()
     new_archive_prod.category.add(*categories)
+    
+    # Delete the product from the active product table
     product_detail.delete()
 
     messages.info(request, f'Listing closed! The winner is {winner.username}\
@@ -217,6 +268,10 @@ def close_bid(request, product_id, winner_id):
 
 @login_required
 def archive_view(request, product_id):
+    """
+    A route representing the archive product view.
+    """
+    # Retrieve the archive product info and pass to the template
     try:
         product_detail = ArchiveProduct.objects.get(active_product_id=product_id)
     except:
@@ -231,6 +286,11 @@ def archive_view(request, product_id):
 
 @login_required
 def watchlist_page(request):
+    """
+    A route representing the watchlist page.
+    A watchlist is retrieved by filtering the Watchlist table with the user's id, then
+    collect products from the Product table that correspond with the watchlist's product_id
+    """
     profile = request.user
     watchlist = Watchlist.objects.filter(user_id=profile.id)
     prods = Product.objects.filter(pk__in=watchlist.values('product_id'))
@@ -243,6 +303,9 @@ def watchlist_page(request):
 
 @login_required
 def addto_watchlist(request, product_id):
+    """
+    A route representing the add-to watchlist navigation.
+    """
     product_detail = Product.objects.get(pk=product_id)
     profile = request.user
 
@@ -253,6 +316,9 @@ def addto_watchlist(request, product_id):
 
 @login_required
 def delete_from_watchlist(request, product_id, user_id):
+    """
+    A route representing the unwatch navigation.
+    """
     watchlist_record = Watchlist.objects.filter(product_id=product_id, user_id=user_id)
     watchlist_record.delete()
 

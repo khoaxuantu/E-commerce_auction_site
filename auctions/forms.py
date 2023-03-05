@@ -6,8 +6,12 @@ from .models import *
 
 
 class CustomMMCF(forms.ModelMultipleChoiceField):
+    """
+    A custom ModelMultipleChoiceField.
+    """
     def label_from_instance(self, Categories) -> str:
         return f"{Categories.name}"
+
 
 class CreateListingForm(forms.ModelForm):
     class Meta:

@@ -8,6 +8,9 @@ def user_directory_path(instance, filename):
 
 
 class Categories(models.Model):
+    """
+    A class implementing the category object.
+    """
     name = models.CharField(max_length=64)
 
     def __str__(self) -> str:
