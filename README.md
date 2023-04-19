@@ -21,5 +21,14 @@ to perform basic auction functionalities.
 - [Bootstrap](https://getbootstrap.com/)
 - [PostgreSQL](https://www.postgresql.org/)
 
+## Prerequisite
+Python 3.10
+PostgreSQL 15.2
+
+## Run (Local)
+```bash
+python3 manage.py runserver
+```
+
 ## Demo
 [Youtube](https://youtu.be/dC6IBfkbZs8)
