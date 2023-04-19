@@ -22,8 +22,8 @@ to perform basic auction functionalities.
 - [PostgreSQL](https://www.postgresql.org/)
 
 ## Prerequisite
-Python 3.10
-PostgreSQL 15.2
+- Python 3.10
+- PostgreSQL 15.2
 
 ## Run (Local)
 ```bash
